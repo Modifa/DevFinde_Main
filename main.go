@@ -25,9 +25,6 @@ func setupRouter() *gin.Engine {
 	r.Use(cors.New(config))
 	// r.Use(gzip.Gzip(gzip.DefaultCompression))
 
-	/************/
-	/* Users */
-	/************/
 	router.Init(r)
 
 	return r
@@ -35,7 +32,7 @@ func setupRouter() *gin.Engine {
 
 func setupConfigs() {
 	//NGrok For Testing Purposes
-	// os.Setenv("CURRENTDOMAIN", "https://8fae-102-32-36-115.in.ngrok.io")
+	os.Setenv("CURRENTDOMAIN", "https://a64b-102-32-34-78.eu.ngrok.io")
 
 	//Reddis Details
 	os.Setenv("REDISSERVER_HOST", "redis-19714.c124.us-central1-1.gce.cloud.redislabs.com")
@@ -43,14 +40,14 @@ func setupConfigs() {
 	os.Setenv("REDISSERVER_PASSWORD", "ULXGpAVRYk1G9tBxi9D4jkksGQLA7A9Q")
 
 	//Postgres Connection String
-	os.Setenv("ProjectMain", "postgres://cogjgedlgavael:cf43a86f559ebdd296331ca10991a0bfc87dfcf1fb7c83d3407698719348a669@ec2-18-204-74-74.compute-1.amazonaws.com:5432/d7jnruc4m8g23q")
+	os.Setenv("PostgresConString", "postgres://cogjgedlgavael:cf43a86f559ebdd296331ca10991a0bfc87dfcf1fb7c83d3407698719348a669@ec2-18-204-74-74.compute-1.amazonaws.com:5432/d7jnruc4m8g23q")
 	os.Setenv("WEBSERVER_PORT", "8080")
 
 }
 
 func main() {
 	//Uncommented When Not Debugging
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	// export GIN_MODE=release
 
 	// gocron.Start()
