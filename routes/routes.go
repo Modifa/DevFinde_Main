@@ -11,5 +11,10 @@ func Init(r *gin.Engine) {
 	{
 		V1.POST("GetDeveloperProfile", cont.GetDeveloperProfile)
 		V1.POST("RegisterDeveloper", cont.RegisterDeveloper)
+		V1.POST("AddDeveloperLink", cont.AddDeveloperLink)
+		V1.POST("AddDeveloperExperience", cont.AddDeveloperExperience)
+		V1.POST("UpdateDeveloperProfile", cont.UpdateDeveloperProfile)
+		V1.GET("GetDBProfile", cont.GetDBProfile)
+		V1.POST("UpdateImage", cont.UpdateImage)
 	}
 }

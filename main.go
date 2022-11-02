@@ -18,7 +18,7 @@ func setupRouter() *gin.Engine {
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	// OPTIONS method for ReactJS
-	config.AllowMethods = []string{"POST", "GET", "OPTIONS"}
+	config.AllowMethods = []string{"POST", "GET", "OPTIONS", "PUT"}
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Origin", "x-access-token", "content-type", "Content-Length", "Authorization", "Cache-Control"}
 	config.ExposeHeaders = []string{"Content-Length"}
@@ -32,7 +32,7 @@ func setupRouter() *gin.Engine {
 
 func setupConfigs() {
 	//NGrok For Testing Purposes
-	os.Setenv("CURRENTDOMAIN", "https://a64b-102-32-34-78.eu.ngrok.io")
+	os.Setenv("CURRENTDOMAIN", "https://6b42-102-32-31-206.eu.ngrok.io")
 
 	//Reddis Details
 	os.Setenv("REDISSERVER_HOST", "redis-19714.c124.us-central1-1.gce.cloud.redislabs.com")

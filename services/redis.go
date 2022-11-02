@@ -67,3 +67,79 @@ func SaveDeveloperprofile(User models.DeveloperProfile) error {
 	err = rdb.Set(ctx, "DEVELOPER:"+Newkey, b, 0).Err()
 	return err
 }
+
+//Save Portfolio Links
+func SaveDeveloperLinks(DeveloperLinks models.LinksRequestReponse, Username string) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*LookUP*/
+		MaxConnAge: 0,
+	})
+
+	b, err := json.Marshal(DeveloperLinks)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	// err = rdb.Set(ctx, "PORTFOLIO:TRANSACTIONS:"+TransactionId, b, 0).Err()
+	err = rdb.LPush(ctx, "LINKS:"+Username+":", b).Err()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return err
+}
+
+func GetAllDeveloperLinks(key string) []models.LinksRequestReponse {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*Transaction Redis DB*/
+		MaxConnAge: 0,
+	})
+
+	Links := []models.LinksRequestReponse{}
+
+	r, _ := rdb.LRange(ctx, key, 0, -1).Result()
+
+	for _, val := range r {
+
+		d := models.LinksRequestReponse{}
+
+		json.Unmarshal(json.RawMessage(val), &d)
+
+		Links = append(Links, d)
+
+	}
+
+	return Links
+}
+
+//
+//Save Developer Experinces
+func SaveDeveloperExperience(DeveloperLinks models.ExperienceResponseDB, Username string) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*LookUP*/
+		MaxConnAge: 0,
+	})
+
+	b, err := json.Marshal(DeveloperLinks)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	// err = rdb.Set(ctx, "PORTFOLIO:TRANSACTIONS:"+TransactionId, b, 0).Err()
+	err = rdb.LPush(ctx, "EXPERIENCE:"+Username+":", b).Err()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return err
+}
