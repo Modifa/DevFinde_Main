@@ -276,5 +276,186 @@ func UpdateImage(c *gin.Context) {
 			fmt.Println(err1)
 		}
 	}()
-
 }
+
+//Add Resume Link
+func AddResumeLink(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.AddResumeLinkDB
+	var resume models.AddResumeLink
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resume.ID = t.ID
+	resume.ResumeURL = t.ResumeURL
+	_, err := db.SAVEONDB("dev_finder.fn_add_resume_link", resume)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.GetDeveloperProfile
+	q.EmailAddress = t.Email
+
+	resp, err := db.GetDeveloperProfile("dev_finder.fn_get_developer_profile", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	go func() {
+		err1 := services.SaveDeveloperprofile(resp[0])
+		if err != nil {
+			fmt.Println(err1)
+		}
+	}()
+}
+
+//
+func AddResume(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.AddResumeDB
+	var resume models.AddResume
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resume.ID = t.ID
+	resume.ResumeURL = t.ResumeURL
+	_, err := db.SAVEONDB("dev_finder.fn_add_resume", resume)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.DBIDRequest
+	q.ID = t.ID
+
+	resp, err := db.GetResume("dev_finder.fn_get_developer_resume", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	go func() {
+		err1 := services.SaveDeveloperResume(resp[0])
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+	}()
+}
+
+func UpdateResume(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.AddResumeLinkDB
+	var resume models.AddResumeLink
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resume.ID = t.ID
+	resume.ResumeURL = t.ResumeURL
+	_, err := db.SAVEONDB("dev_finder.fn_update_developer_resume", resume)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.DBIDRequest
+	q.ID = t.ID
+
+	resp, err := db.GetResume("dev_finder.fn_get_developer_resume", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	go func() {
+		err1 := services.SaveDeveloperResume(resp[0])
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+	}()
+}
+
+//
+
+func AddEducation(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.EducationRequest
+	var e models.Education
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	e.ID = t.ID
+	e.Intsitution = t.Intsitution
+	e.Qualification_name = t.Qualification_name
+	e.Qualification_type_ = t.Qualification_type_
+	e.Start_date = t.Start_date
+	e.EndDate = t.EndDate
+
+	_, err := db.SAVEONDB("dev_finder.fn_update_developer_resume", e)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.DBIDRequest
+	q.ID = t.ID
+
+	resp, err := db.GetEducation("dev_finder.fn_get_developer_education", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	//
+	go func() {
+		for i := 0; i < len(resp); i++ {
+			services.SaveDeveloperEnducation(resp[i], t.UserName)
+		}
+	}()
+}
+
+//
+//dev_finder.fn_get_developer_resume

@@ -96,6 +96,46 @@ func (db *DB) GetDeveloperProfile(functionnamewithschema string, m interface{}) 
 	return User, nil
 }
 
+//ResumeResponse
+func (db *DB) GetResume(functionnamewithschema string, m interface{}) ([]models.ResumeResponse, error) {
+	User := []models.ResumeResponse{}
+	u := ConVertInterface(functionnamewithschema, m)
+	ctx := context.Background()
+	db1, _ := pgxpool.Connect(ctx, os.Getenv("PostgresConString"))
+	defer db1.Close()
+	//
+	err := pgxscan.Select(ctx, db1, &User, u)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			fmt.Println(pgErr.Message) // => syntax error at end of input
+			fmt.Println(pgErr)         // => syntax error at end of input
+			fmt.Println(pgErr.Code)    // => 42601
+		}
+	}
+	return User, nil
+}
+
+//Education
+func (db *DB) GetEducation(functionnamewithschema string, m interface{}) ([]models.Education, error) {
+	User := []models.Education{}
+	u := ConVertInterface(functionnamewithschema, m)
+	ctx := context.Background()
+	db1, _ := pgxpool.Connect(ctx, os.Getenv("PostgresConString"))
+	defer db1.Close()
+	//
+	err := pgxscan.Select(ctx, db1, &User, u)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			fmt.Println(pgErr.Message) // => syntax error at end of input
+			fmt.Println(pgErr)         // => syntax error at end of input
+			fmt.Println(pgErr.Code)    // => 42601
+		}
+	}
+	return User, nil
+}
+
 //Add
 func (db *DB) SAVEONDB(functionnamewithschema string, m interface{}) (models.DBIDResponse, error) {
 	User := models.DBIDResponse{}

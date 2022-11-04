@@ -16,5 +16,10 @@ func Init(r *gin.Engine) {
 		V1.POST("UpdateDeveloperProfile", cont.UpdateDeveloperProfile)
 		V1.GET("GetDBProfile", cont.GetDBProfile)
 		V1.POST("UpdateImage", cont.UpdateImage)
+		//Untested
+		V1.POST("AddResume", cont.AddResume)
+		V1.POST("AddResumeLink", cont.AddResumeLink)
+		V1.POST("UpdateResume", cont.UpdateResume)
+		V1.POST("AddEducation", cont.AddEducation)
 	}
 }

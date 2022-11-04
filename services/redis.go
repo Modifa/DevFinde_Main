@@ -68,8 +68,55 @@ func SaveDeveloperprofile(User models.DeveloperProfile) error {
 	return err
 }
 
+//Set Redis Developer Profile
+func SaveDeveloperResume(User models.ResumeResponse) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,
+		MaxConnAge: 0,
+	})
+	b, err := json.Marshal(User)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	/**/
+
+	Newkey := strings.ToUpper(User.Username)
+	err = rdb.Set(ctx, "RESUME:"+Newkey, b, 0).Err()
+	return err
+}
+
 //Save Portfolio Links
 func SaveDeveloperLinks(DeveloperLinks models.LinksRequestReponse, Username string) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*LookUP*/
+		MaxConnAge: 0,
+	})
+
+	b, err := json.Marshal(DeveloperLinks)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	// err = rdb.Set(ctx, "PORTFOLIO:TRANSACTIONS:"+TransactionId, b, 0).Err()
+	err = rdb.LPush(ctx, "LINKS:"+Username+":", b).Err()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return err
+}
+
+//
+//Save Portfolio Links
+func SaveDeveloperEnducation(DeveloperLinks models.Education, Username string) error {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
 		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
