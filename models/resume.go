@@ -31,3 +31,7 @@ type ResumeResponse struct {
 	ResumeURL string `db:"resume_link"`
 	Username  string `db:"username"`
 }
+
+type ResumeRequestRedis struct {
+	Username string `json:"username"`
+}

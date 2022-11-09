@@ -21,5 +21,11 @@ func Init(r *gin.Engine) {
 		V1.POST("AddResumeLink", cont.AddResumeLink)
 		V1.POST("UpdateResume", cont.UpdateResume)
 		V1.POST("AddEducation", cont.AddEducation)
+
+		//Get
+		V1.GET("GetResume", cont.GetDeveloperResume)
+		V1.GET("GetDeveloperEducation", cont.GetDeveloperEducation)
+		V1.GET("GetDeveloperExperienceRedis", cont.GetDeveloperExperienceRedis)
+		V1.GET("GetDeveloperLinksRedis", cont.GetDeveloperLinksRedis)
 	}
 }

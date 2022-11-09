@@ -190,3 +190,130 @@ func SaveDeveloperExperience(DeveloperLinks models.ExperienceResponseDB, Usernam
 
 	return err
 }
+
+//
+
+func GetDeveloperResume(Key string) (bool, *models.ResumeResponse) {
+	var cp *models.ResumeResponse
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,
+		MaxConnAge: 0, // use default DB
+	})
+
+	//err := rdb.Set(ctx, "TAXIMONEY:TAXIPROFILE:"+taxino, taxino, 0).Err()
+
+	val, err := rdb.Get(ctx, "RESUME:"+Key).Result()
+
+	defer rdb.Close()
+	if err != nil {
+		//panic(err)
+		return false, cp
+	}
+
+	byt := []byte(val)
+
+	if err := json.Unmarshal(byt, &cp); err != nil {
+		panic(err)
+	}
+
+	//fmt.Println("key", val)
+
+	return true, cp
+
+}
+
+//
+func GetDeveloperEducation(key string) (bool, []models.Education) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*Transaction Redis DB*/
+		MaxConnAge: 0,
+	})
+
+	Education := []models.Education{}
+
+	r, err := rdb.LRange(ctx, key, 0, -1).Result()
+	defer rdb.Close()
+	if err != nil {
+		//panic(err)
+		return false, Education
+	}
+
+	for _, val := range r {
+
+		d := models.Education{}
+
+		json.Unmarshal(json.RawMessage(val), &d)
+
+		Education = append(Education, d)
+
+	}
+
+	return true, Education
+}
+
+//
+func GetDeveloperExperienceRD(key string) (bool, []models.ExperienceResponseDB) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*Transaction Redis DB*/
+		MaxConnAge: 0,
+	})
+
+	Exp := []models.ExperienceResponseDB{}
+
+	r, err := rdb.LRange(ctx, key, 0, -1).Result()
+	defer rdb.Close()
+	if err != nil {
+		//panic(err)
+		return false, Exp
+	}
+
+	for _, val := range r {
+
+		d := models.ExperienceResponseDB{}
+
+		json.Unmarshal(json.RawMessage(val), &d)
+
+		Exp = append(Exp, d)
+
+	}
+
+	return true, Exp
+}
+
+//
+func GetDeveloperLinksRD(key string) (bool, []models.LinksRequestReponse) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*Transaction Redis DB*/
+		MaxConnAge: 0,
+	})
+
+	Links := []models.LinksRequestReponse{}
+
+	r, err := rdb.LRange(ctx, key, 0, -1).Result()
+	defer rdb.Close()
+	if err != nil {
+		//panic(err)
+		return false, Links
+	}
+
+	for _, val := range r {
+
+		d := models.LinksRequestReponse{}
+
+		json.Unmarshal(json.RawMessage(val), &d)
+
+		Links = append(Links, d)
+
+	}
+
+	return true, Links
+}

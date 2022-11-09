@@ -1,0 +1,163 @@
+package controller
+
+import (
+	"fmt"
+	"net/http"
+
+	models "github.com/Modifa/DevFinde_Main/models"
+	services "github.com/Modifa/DevFinde_Main/services"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+)
+
+//Add Resume Link
+func AddResumeLink(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.AddResumeLinkDB
+	var resume models.AddResumeLink
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resume.ID = t.ID
+	resume.ResumeURL = t.ResumeURL
+	_, err := db.SAVEONDB("dev_finder.fn_add_resume_link", resume)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.GetDeveloperProfile
+	q.EmailAddress = t.Email
+
+	resp, err := db.GetDeveloperProfile("dev_finder.fn_get_developer_profile", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	go func() {
+		err1 := services.SaveDeveloperprofile(resp[0])
+		if err != nil {
+			fmt.Println(err1)
+		}
+	}()
+}
+
+//
+func AddResume(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.AddResumeDB
+	var resume models.AddResume
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resume.ID = t.ID
+	resume.ResumeURL = t.ResumeURL
+	_, err := db.SAVEONDB("dev_finder.fn_add_resume", resume)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.DBIDRequest
+	q.ID = t.ID
+
+	resp, err := db.GetResume("dev_finder.fn_get_developer_resume", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	go func() {
+		err1 := services.SaveDeveloperResume(resp[0])
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+	}()
+}
+
+func UpdateResume(c *gin.Context) {
+
+	db := services.DB{}
+
+	var t models.AddResumeLinkDB
+	var resume models.AddResumeLink
+
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	resume.ID = t.ID
+	resume.ResumeURL = t.ResumeURL
+	_, err := db.SAVEONDB("dev_finder.fn_update_developer_resume", resume)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	var q models.DBIDRequest
+	q.ID = t.ID
+
+	resp, err := db.GetResume("dev_finder.fn_get_developer_resume", q)
+	if err != nil {
+		fmt.Println("QueryRow failed: ", err.Error())
+		errormessage := fmt.Sprintf("%v\n", err)
+		c.JSON(http.StatusBadRequest, errormessage)
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	go func() {
+		err1 := services.SaveDeveloperResume(resp[0])
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+	}()
+}
+
+//GetDeveloperResume
+
+func GetDeveloperResume(c *gin.Context) {
+
+	var t models.ResumeRequestRedis
+	var rb models.Returnblock
+	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	exists, resume := services.GetDeveloperResume(t.Username)
+	if exists {
+		c.JSON(http.StatusOK, rb.New(true, "", resume))
+		return
+	} else {
+		c.JSON(http.StatusOK, rb.New(false, "Resume Not Uploaded", resume))
+		return
+	}
+}
