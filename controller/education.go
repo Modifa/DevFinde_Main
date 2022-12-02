@@ -6,6 +6,7 @@ import (
 
 	models "github.com/Modifa/DevFinde_Main/models"
 	services "github.com/Modifa/DevFinde_Main/services"
+	utils "github.com/Modifa/DevFinde_Main/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -24,7 +25,7 @@ func AddEducation(c *gin.Context) {
 	e.ID = t.ID
 	e.Intsitution = t.Intsitution
 	e.Qualification_name = t.Qualification_name
-	e.Qualification_type_ = t.Qualification_type_
+	e.Qualification_type_ = utils.StringToInt64(t.Qualification_type_)
 	e.Start_date = t.Start_date
 	e.EndDate = t.EndDate
 

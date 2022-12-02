@@ -7,9 +7,42 @@ type AddResumeLink struct {
 }
 
 type AddResumeLinkDB struct {
+	ID       int64  `json:"_developer_id"`
+	LinkType string `json:"_link_type"`
+	Link     string `json:"Link_"`
+	Username string `json:"username"`
+}
+type AddResumeLinkDBPOST struct {
+	ID       int64  `json:"_developer_id"`
+	LinkType int64  `json:"_link_type"`
+	Link     string `json:"Link_"`
+}
+type AddResumeDescDB struct {
 	ID        int64  `json:"developer_id"`
 	ResumeURL string `json:"resume_link"`
 	Email     string `json:"email_address"`
+}
+
+type UpdateResumeLinkDB struct {
+	ID       int64  `json:"_developer_id"`
+	LinkId   int64  `json:"link_id"`
+	Link     string `json:"Link_"`
+	Username string `db:"username"`
+}
+type UpdateResumeLinkPOST struct {
+	ID     int64  `json:"_developer_id"`
+	LinkId int64  `json:"link_id"`
+	Link   string `json:"Link_"`
+}
+type DeleteResumeLink struct {
+	ID       int64  `json:"_developer_id"`
+	LinkId   int64  `json:"link_id"`
+	Username string `db:"username"`
+}
+
+type DeleteResumeLinkPOST struct {
+	ID     int64 `json:"_developer_id"`
+	LinkId int64 `json:"link_id"`
 }
 
 //Resume
@@ -34,4 +67,29 @@ type ResumeResponse struct {
 
 type ResumeRequestRedis struct {
 	Username string `json:"username"`
+}
+
+type ResumedescReq struct {
+	ID      int64  `json:"_developer_id"`
+	AboutMe string `json:"short_desc"`
+}
+
+//
+type ResumedescRes struct {
+	ResID       int64  `db:"id"`
+	Description string `db:"description"`
+	Username    string `db:"username"`
+	Dateadded   string `db:"dateadded"`
+}
+
+type ResumedescRedis struct {
+	ResID       int64  `db:"id"`
+	Description string `db:"description"`
+	Dateadded   string `db:"dateadded"`
+}
+
+type ResumedescRedisUP struct {
+	ResID        int64  `json:"res_id"`
+	Developer_ID int64  `json:"_developer_id"`
+	Description  string `json:"short_desc"`
 }

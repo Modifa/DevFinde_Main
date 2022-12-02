@@ -96,6 +96,26 @@ func (db *DB) GetDeveloperProfile(functionnamewithschema string, m interface{}) 
 	return User, nil
 }
 
+//
+func (db *DB) GetDeveloperResumeDesc(functionnamewithschema string, m interface{}) ([]models.ResumedescRes, error) {
+	User := []models.ResumedescRes{}
+	u := ConVertInterface(functionnamewithschema, m)
+	ctx := context.Background()
+	db1, _ := pgxpool.Connect(ctx, os.Getenv("PostgresConString"))
+	defer db1.Close()
+	//
+	err := pgxscan.Select(ctx, db1, &User, u)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			fmt.Println(pgErr.Message) // => syntax error at end of input
+			fmt.Println(pgErr)         // => syntax error at end of input
+			fmt.Println(pgErr.Code)    // => 42601
+		}
+	}
+	return User, nil
+}
+
 //ResumeResponse
 func (db *DB) GetResume(functionnamewithschema string, m interface{}) ([]models.ResumeResponse, error) {
 	User := []models.ResumeResponse{}

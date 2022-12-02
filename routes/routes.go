@@ -19,13 +19,21 @@ func Init(r *gin.Engine) {
 		//Untested
 		V1.POST("AddResume", cont.AddResume)
 		V1.POST("AddResumeLink", cont.AddResumeLink)
-		V1.POST("UpdateResume", cont.UpdateResume)
+		V1.POST("UpdateDeveloperLink", cont.UpdateDeveloperLink)
+		// V1.POST("UpdateResume", cont.UpdateResume)
 		V1.POST("AddEducation", cont.AddEducation)
 
 		//Get
-		V1.GET("GetResume", cont.GetDeveloperResume)
-		V1.GET("GetDeveloperEducation", cont.GetDeveloperEducation)
-		V1.GET("GetDeveloperExperienceRedis", cont.GetDeveloperExperienceRedis)
-		V1.GET("GetDeveloperLinksRedis", cont.GetDeveloperLinksRedis)
+		V1.POST("GetResume", cont.GetDeveloperResume)
+		V1.POST("GetDeveloperEducation", cont.GetDeveloperEducation)
+		V1.POST("GetDeveloperExperienceRedis", cont.GetDeveloperExperienceRedis)
+		V1.POST("GetDeveloperLinksRedis", cont.GetDeveloperLinksRedis)
+		//
+		V1.POST("AddResumeDesc", cont.AddResumeDesc)
+		V1.POST("UpdateResumeDesc", cont.UpdateResumeDesc)
+		V1.POST("GetDeveloperResumedesc", cont.GetDeveloperResumedesc)
+
+		//
+		V1.POST("DeleteDeveloperLink", cont.DeleteDeveloperLink)
 	}
 }

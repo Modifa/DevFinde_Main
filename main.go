@@ -32,7 +32,7 @@ func setupRouter() *gin.Engine {
 
 func setupConfigs() {
 	//NGrok For Testing Purposes
-	os.Setenv("CURRENTDOMAIN", "https://6b42-102-32-31-206.eu.ngrok.io")
+	os.Setenv("CURRENTDOMAIN", "https://f486-102-32-21-219.eu.ngrok.io")
 
 	//Reddis Details
 	os.Setenv("REDISSERVER_HOST", "redis-19714.c124.us-central1-1.gce.cloud.redislabs.com")

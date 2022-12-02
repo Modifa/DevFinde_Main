@@ -114,6 +114,25 @@ func SaveDeveloperLinks(DeveloperLinks models.LinksRequestReponse, Username stri
 	return err
 }
 
+//	err := rdb.Del(ctx, "TPAY:LOOKUPS:CITIES:"+ProvinceId).Err()
+func ClearDeveloperLinks(Username string) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*LookUP*/
+		MaxConnAge: 0,
+	})
+
+	Newkey := strings.ToUpper(Username)
+	err := rdb.Del(ctx, "LINKS:"+Newkey+":").Err()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return err
+}
+
 //
 //Save Portfolio Links
 func SaveDeveloperEnducation(DeveloperLinks models.Education, Username string) error {
@@ -297,8 +316,8 @@ func GetDeveloperLinksRD(key string) (bool, []models.LinksRequestReponse) {
 	})
 
 	Links := []models.LinksRequestReponse{}
-
-	r, err := rdb.LRange(ctx, key, 0, -1).Result()
+	Newkey := strings.ToUpper(key)
+	r, err := rdb.LRange(ctx, "LINKS:"+Newkey+":", 0, -1).Result()
 	defer rdb.Close()
 	if err != nil {
 		//panic(err)
@@ -316,4 +335,56 @@ func GetDeveloperLinksRD(key string) (bool, []models.LinksRequestReponse) {
 	}
 
 	return true, Links
+}
+
+////Set Redis Developer Profile
+func SaveDeveloperResumeDesc(User models.ResumedescRedis, Key string) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,
+		MaxConnAge: 0,
+	})
+	b, err := json.Marshal(User)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	/**/
+	Newkey := strings.ToUpper(Key)
+	err = rdb.Set(ctx, "RESUME:DESCRIPTION:"+Newkey, b, 0).Err()
+	return err
+}
+
+func GetDeveloperResumeDesc(Key string) (bool, *models.ResumedescRedis) {
+	var cp *models.ResumedescRedis
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,
+		MaxConnAge: 0, // use default DB
+	})
+
+	//err := rdb.Set(ctx, "TAXIMONEY:TAXIPROFILE:"+taxino, taxino, 0).Err()
+
+	val, err := rdb.Get(ctx, "RESUME:DESCRIPTION:"+Key).Result()
+
+	defer rdb.Close()
+	if err != nil {
+		//panic(err)
+		return false, cp
+	}
+
+	byt := []byte(val)
+
+	if err := json.Unmarshal(byt, &cp); err != nil {
+		panic(err)
+	}
+
+	//fmt.Println("key", val)
+
+	return true, cp
+
 }

@@ -46,6 +46,12 @@ func StringToInt(f string) int {
 	return floatNum
 }
 
+//i, _ := strconv.ParseInt(s, 10, 64)
+func StringToInt64(f string) int64 {
+	i, _ := strconv.ParseInt(f, 10, 64)
+	return i
+}
+
 /*Int64ToString ...  */
 func Int64ToString(f int64) string {
 	// to convert a float number to a string
