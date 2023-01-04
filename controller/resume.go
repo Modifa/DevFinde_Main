@@ -226,36 +226,41 @@ func AddResumeDesc(c *gin.Context) {
 func UpdateResumeDesc(c *gin.Context) {
 
 	db := services.DB{}
-
-	var t models.DBIDRequest
-	var resume models.ResumedescRedisUP
+	var rb models.Returnblock
+	var t models.ResumedescRedisUP
+	var resume models.ResumeDesc
+	var q models.DBIDRequest
 
 	if err := c.ShouldBindBodyWith(&t, binding.JSON); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
 
-	_, err := db.SAVEONDB("dev_finder.fn_add_resume_desc", resume)
+	resume.Description = t.Description
+	resume.Developer_ID = t.Developer_ID
+
+	_, err := db.SAVEONDB("dev_finder.fn_update_resume_desc", resume)
 	if err != nil {
 		fmt.Println("QueryRow failed: ", err.Error())
 		errormessage := fmt.Sprintf("%v\n", err)
-		c.JSON(http.StatusBadRequest, errormessage)
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		c.JSON(http.StatusBadRequest, rb.New(false, errormessage, 0))
+
 		return
 	}
-	t.ID = resume.Developer_ID
-	resp, err := db.GetDeveloperResumeDesc("dev_finder.fn_get_developer_resume_desc", t)
+	q.ID = resume.Developer_ID
+	resp, err := db.GetDeveloperResumeDesc("dev_finder.fn_get_developer_resume_desc", q)
 	if err != nil {
 		fmt.Println("QueryRow failed: ", err.Error())
 		errormessage := fmt.Sprintf("%v\n", err)
-		c.JSON(http.StatusBadRequest, errormessage)
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		c.JSON(http.StatusBadRequest, rb.New(false, errormessage, 0))
+
 		return
 	}
 	//SaveDeveloperResumeDesc
 	var W models.ResumedescRedis
 	W.Dateadded = resp[0].Dateadded
 	W.Description = resp[0].Description
+	W.ResID = resp[0].ResID
 
 	go func() {
 		err1 := services.SaveDeveloperResumeDesc(W, resp[0].Username)
@@ -263,6 +268,9 @@ func UpdateResumeDesc(c *gin.Context) {
 			fmt.Println(err1)
 		}
 	}()
+
+	c.JSON(http.StatusOK, rb.New(true, "", W))
+
 }
 
 //GetDeveloperResumeDesc

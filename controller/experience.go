@@ -13,39 +13,48 @@ import (
 func AddDeveloperExperience(c *gin.Context) {
 
 	db := services.DB{}
-
+	var rb models.Returnblock
 	var u models.ExperienceRequest
 	var q models.IDRequest
+	var exp models.ExperienceRequestDB
 
 	if err := c.ShouldBindBodyWith(&u, binding.JSON); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	q.Id = u.Id
+	//
+	exp.Id = u.Id
+	exp.Company = u.Company
+	exp.Description = u.Description
+	exp.Title = u.Title
+	exp.Start_date = u.Start_date
+	exp.End_date = u.End_date
 
-	_, err := db.SAVEONDB("dev_finder.fn_add_experience", u)
+	err := db.SAVEONDBNPRETURN("dev_finder.fn_add_experience", exp)
 	if err != nil {
 		fmt.Println("QueryRow failed: ", err.Error())
 		errormessage := fmt.Sprintf("%v\n", err)
-		c.JSON(http.StatusBadRequest, errormessage)
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		c.JSON(http.StatusBadRequest, rb.New(false, errormessage, 0))
 		return
 	}
 	//
+	q.Id = u.Id
 	Experiences, err := db.GetDeveloperExperience("dev_finder.fn_add_experience", q)
 	if err != nil {
 		fmt.Println("QueryRow failed: ", err.Error())
 		errormessage := fmt.Sprintf("%v\n", err)
-		c.JSON(http.StatusBadRequest, errormessage)
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		c.JSON(http.StatusBadRequest, rb.New(false, errormessage, 0))
 		return
 	}
 	//
 	go func() {
+		services.ClearDeveloperExperience(u.Username)
 		for i := 0; i < len(Experiences); i++ {
 			services.SaveDeveloperExperience(Experiences[i], u.Username)
 		}
 	}()
+
+	c.JSON(http.StatusOK, rb.New(true, "", 0))
 
 }
 

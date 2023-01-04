@@ -211,6 +211,25 @@ func SaveDeveloperExperience(DeveloperLinks models.ExperienceResponseDB, Usernam
 }
 
 //
+func ClearDeveloperExperience(Username string) error {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:       os.Getenv("REDISSERVER_HOST") + ":" + os.Getenv("REDISSERVER_PORT"),
+		Password:   os.Getenv("REDISSERVER_PASSWORD"), // no password set
+		DB:         0,                                 /*LookUP*/
+		MaxConnAge: 0,
+	})
+
+	Newkey := strings.ToUpper(Username)
+	err := rdb.Del(ctx, "EXPERIENCE:"+Newkey+":").Err()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return err
+}
+
+//
 
 func GetDeveloperResume(Key string) (bool, *models.ResumeResponse) {
 	var cp *models.ResumeResponse

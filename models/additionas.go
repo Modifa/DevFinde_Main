@@ -38,7 +38,6 @@ type ExperienceRequestDB struct {
 	Company     string `json:"company"`
 	Start_date  string `json:"start_date"`
 	End_date    string `json:"end_date"`
-	Username    string `json:"username"`
 }
 
 type ExperienceResponseDB struct {

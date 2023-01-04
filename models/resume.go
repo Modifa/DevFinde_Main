@@ -30,8 +30,8 @@ type UpdateResumeLinkDB struct {
 	Username string `db:"username"`
 }
 type UpdateResumeLinkPOST struct {
-	ID     int64  `json:"_developer_id"`
 	LinkId int64  `json:"link_id"`
+	ID     int64  `json:"_developer_id"`
 	Link   string `json:"Link_"`
 }
 type DeleteResumeLink struct {
@@ -41,8 +41,8 @@ type DeleteResumeLink struct {
 }
 
 type DeleteResumeLinkPOST struct {
-	ID     int64 `json:"_developer_id"`
 	LinkId int64 `json:"link_id"`
+	ID     int64 `json:"_developer_id"`
 }
 
 //Resume
@@ -89,7 +89,13 @@ type ResumedescRedis struct {
 }
 
 type ResumedescRedisUP struct {
-	ResID        int64  `json:"res_id"`
+	Username     string `db:"username"`
+	Developer_ID int64  `json:"_developer_id"`
+	Description  string `json:"short_desc"`
+}
+
+//
+type ResumeDesc struct {
 	Developer_ID int64  `json:"_developer_id"`
 	Description  string `json:"short_desc"`
 }

@@ -34,7 +34,7 @@ func (db *DB) RegisterDeveloper(functionnamewithschema string, m interface{}) ([
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 func (db *DB) GetDeveloperLinks(functionnamewithschema string, m interface{}) ([]models.LinksRequestReponse, error) {
@@ -53,7 +53,7 @@ func (db *DB) GetDeveloperLinks(functionnamewithschema string, m interface{}) ([
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 //
@@ -73,7 +73,7 @@ func (db *DB) GetDeveloperExperience(functionnamewithschema string, m interface{
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 //Get Developer Profile
@@ -93,7 +93,7 @@ func (db *DB) GetDeveloperProfile(functionnamewithschema string, m interface{}) 
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 //
@@ -113,7 +113,7 @@ func (db *DB) GetDeveloperResumeDesc(functionnamewithschema string, m interface{
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 //ResumeResponse
@@ -133,7 +133,7 @@ func (db *DB) GetResume(functionnamewithschema string, m interface{}) ([]models.
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 //Education
@@ -153,18 +153,18 @@ func (db *DB) GetEducation(functionnamewithschema string, m interface{}) ([]mode
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return User, err
 }
 
 //Add
-func (db *DB) SAVEONDB(functionnamewithschema string, m interface{}) (models.DBIDResponse, error) {
-	User := models.DBIDResponse{}
+func (db *DB) SAVEONDB(functionnamewithschema string, m interface{}) (int64, error) {
+	var returnInt []int64
 	u := ConVertInterface(functionnamewithschema, m)
 	ctx := context.Background()
 	db1, _ := pgxpool.Connect(ctx, os.Getenv("PostgresConString"))
 	defer db1.Close()
 	//
-	err := pgxscan.Select(ctx, db1, &User, u)
+	err := pgxscan.Select(ctx, db1, &returnInt, u)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -173,7 +173,27 @@ func (db *DB) SAVEONDB(functionnamewithschema string, m interface{}) (models.DBI
 			fmt.Println(pgErr.Code)    // => 42601
 		}
 	}
-	return User, nil
+	return returnInt[0], err
+}
+
+//Add
+func (db *DB) SAVEONDBNPRETURN(functionnamewithschema string, m interface{}) error {
+	var returnInt []int64
+	u := ConVertInterface(functionnamewithschema, m)
+	ctx := context.Background()
+	db1, _ := pgxpool.Connect(ctx, os.Getenv("PostgresConString"))
+	defer db1.Close()
+	//
+	err := pgxscan.Select(ctx, db1, &returnInt, u)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			fmt.Println(pgErr.Message) // => syntax error at end of input
+			fmt.Println(pgErr)         // => syntax error at end of input
+			fmt.Println(pgErr.Code)    // => 42601
+		}
+	}
+	return err
 }
 
 //Convert Interface and return Query string
